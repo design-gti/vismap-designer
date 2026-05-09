@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HeatMap Org Chart (Static)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="topbar">
+        <div id="tabFilter" aria-label="Tabs"></div>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div id="viewToggle" style="display: flex; gap: 6px; padding: 4px; background: #f8fafc; border-radius: 10px"></div>
+          <button class="icon-btn" id="settingsBtn" title="Settings" aria-haspopup="menu" aria-expanded="false"></button>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="toasts" id="toasts" aria-live="polite" aria-relevant="additions"></div>
+
+        <div class="canvas" id="canvasRoot"></div>
+
+        <aside class="right-panel hidden" id="rightPanel" aria-label="Details panel"></aside>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="modal" id="modalRoot" role="dialog" aria-modal="true" aria-hidden="true">
+          <div class="modal-card" id="modalCard"></div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+
