@@ -786,18 +786,30 @@ function EmployeeDetailContent({ employeeId, onBack, onShowIDPProgress, onCompar
     status: promotionReadiness >= 81 ? 'Ready' : 'need dev.'
   };
 
-  // Get successors (direct reports + additional successors)
+  // Get successors — prefer CSV-based successorIds, fall back to direct reports
   const currentEmployeeData = dataManager.getEmployees().find(e => e.id === employee.id);
   const additionalSuccessorIds = currentEmployeeData?.additionalSuccessors || [];
-  
+
   const directReports = employees.filter(emp => emp.managerId === employee.id)
     .sort((a, b) => b.competencyScore - a.competencyScore);
-  
+
+  // CSV-based planned successors (from "Successor For Employee ID" column)
+  const csvSuccessorIds = employee.successorIds || [];
+  const csvSuccessors = csvSuccessorIds
+    .map(id => employees.find(e => e.id === id))
+    .filter((emp): emp is Employee => emp !== undefined)
+    .sort((a, b) => b.competencyScore - a.competencyScore);
+
+  // Manually added successors (de-duped against CSV successors)
   const additionalSuccessors = additionalSuccessorIds
     .map(id => employees.find(e => e.id === id))
-    .filter((emp): emp is Employee => emp !== undefined);
-  
-  const successors = [...directReports, ...additionalSuccessors];
+    .filter((emp): emp is Employee => emp !== undefined)
+    .filter(emp => !csvSuccessorIds.includes(emp.id));
+
+  // If CSV has successor data, use it; otherwise fall back to direct reports
+  const successors = csvSuccessorIds.length > 0
+    ? [...csvSuccessors, ...additionalSuccessors]
+    : [...directReports, ...additionalSuccessors];
 
   // Get eligible employees for adding as successors
   const getEligibleEmployees = (): { sameLevel: Employee[], levelBelow: Employee[] } => {

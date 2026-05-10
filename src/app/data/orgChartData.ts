@@ -62,6 +62,7 @@ export interface Employee {
   iq?: number; // IQ score
   department?: string; // For backward compatibility with DataEditor
   additionalSuccessors?: string[]; // Manually added successor IDs (not direct reports)
+  successorIds?: string[]; // IDs of employees who are successors for this employee (from CSV)
   // Cluster Scores for Succession Risk tab
   capabilityScore?: number; // 0-100 score
   commitmentScore?: number; // 0-100 score

@@ -56,6 +56,18 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
   const rankMap = new Map<string, number>();
   sortedByScore.forEach((row, i) => rankMap.set(row['Employee ID'], i + 1));
 
+  // Build successor map: targetId → [successorId, successorId, ...]
+  // "Successor For Employee ID" = the employee this person is a successor FOR
+  const successorMap = new Map<string, string[]>();
+  rows.forEach(row => {
+    const successorForId = row['Successor For Employee ID']?.trim();
+    const employeeId = row['Employee ID']?.trim();
+    if (successorForId && employeeId) {
+      if (!successorMap.has(successorForId)) successorMap.set(successorForId, []);
+      successorMap.get(successorForId)!.push(employeeId);
+    }
+  });
+
   return rows.map(row => {
     const id = row['Employee ID'];
     const numId = parseInt(id);
@@ -70,6 +82,9 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
 
     const managerId = row['Manager ID']?.trim() || undefined;
 
+    // Get successors for this employee (employees who are successors FOR this person)
+    const successorIds = successorMap.get(id) ?? [];
+
     const employee: Employee = {
       id,
       displayId: `EMP${String(numId).padStart(3, '0')}`,
@@ -78,7 +93,8 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
       position: row['Position'],
       jobTitle: row['Department'],
       competencyScore: score,
-      successors: 0,
+      successors: successorIds.length,
+      successorIds: successorIds.length > 0 ? successorIds : undefined,
       managerId,
       imageUrl: row['Photo URL'] || undefined,
       performanceRating: 3,

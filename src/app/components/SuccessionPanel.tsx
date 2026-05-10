@@ -28,6 +28,7 @@ interface SuccessionPanelProps {
   onNavigateToDetail?: (employeeId: string) => void;
   onNavigateToIDP?: (employeeId: string) => void;
   onShowIDPProgress?: (employeeId: string) => void;
+  allEmployees?: Employee[]; // CSV-loaded employees passed from parent
 }
 
 function ChevronsRight() {
@@ -846,34 +847,46 @@ function getSuccessors(employee: Employee): Employee[] {
   return directReports;
 }
 
-export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDialogChange, onAddSuccessorDialogChange, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress }: SuccessionPanelProps) {
+export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDialogChange, onAddSuccessorDialogChange, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress, allEmployees: propEmployees }: SuccessionPanelProps) {
   const [isAddSuccessorDialogOpen, setIsAddSuccessorDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshKey, setRefreshKey] = useState(0); // Force re-render when data changes
-  
+
   // Helper to update dialog state and notify parent
   const setAddSuccessorDialogOpen = (isOpen: boolean) => {
     setIsAddSuccessorDialogOpen(isOpen);
     onAddSuccessorDialogChange?.(isOpen);
   };
-  
+
   if (!employee) return null;
 
-  // Get current employee data from dataManager to access additionalSuccessors
-  const allEmployees = dataManager.getEmployees();
+  // Use CSV-loaded employees from prop if available, fall back to dataManager
+  const allEmployees = propEmployees && propEmployees.length > 0 ? propEmployees : dataManager.getEmployees();
   const currentEmployeeData = allEmployees.find(e => e.id === employee.id);
   const additionalSuccessorIds = currentEmployeeData?.additionalSuccessors || [];
-  
-  // Get direct reports (original successors)
-  const directReports = getSuccessors(employee);
-  
-  // Get additional successors from IDs
+
+  // CSV-based planned successors (from "Successor For Employee ID" column)
+  const csvSuccessorIds = (currentEmployeeData ?? employee).successorIds || [];
+  const csvSuccessors = csvSuccessorIds
+    .map(id => allEmployees.find(e => e.id === id))
+    .filter((emp): emp is Employee => emp !== undefined)
+    .sort((a, b) => (b.competencyScore ?? 0) - (a.competencyScore ?? 0));
+
+  // Direct reports fallback (used when no CSV successor data)
+  const directReports = allEmployees.filter(emp => emp.managerId === employee.id)
+    .sort((a, b) => (b.competencyScore ?? 0) - (a.competencyScore ?? 0));
+
+  // Manually added successors (de-duped against CSV successors)
   const additionalSuccessors = additionalSuccessorIds
     .map(id => allEmployees.find(e => e.id === id))
-    .filter((emp): emp is Employee => emp !== undefined);
-  
-  // Combine all successors (direct + additional)
-  const allSuccessors = [...directReports, ...additionalSuccessors];
+    .filter((emp): emp is Employee => emp !== undefined)
+    .filter(emp => !csvSuccessorIds.includes(emp.id));
+
+  // Primary successor list: CSV-based if available, else direct reports
+  const primarySuccessors = csvSuccessorIds.length > 0 ? csvSuccessors : directReports;
+
+  // Combine all successors
+  const allSuccessors = [...primarySuccessors, ...additionalSuccessors];
 
   const handleCompareClick = () => {
     if (onCompare) {
@@ -884,39 +897,36 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
   // Get eligible employees for adding as successors
   // Same level (same manager) OR level below (anyone with managerId set)
   const getEligibleEmployees = (): { sameLevel: Employee[], levelBelow: Employee[] } => {
-    const allEmployees = dataManager.getEmployees();
-    
     // Helper function to get all superiors (manager chain)
     const getSuperiors = (emp: Employee): Set<string> => {
       const superiors = new Set<string>();
       let currentManagerId = emp.managerId;
-      
+
       while (currentManagerId) {
         superiors.add(currentManagerId);
         const manager = allEmployees.find(e => e.id === currentManagerId);
         currentManagerId = manager?.managerId;
       }
-      
+
       return superiors;
     };
-    
+
     const superiorIds = getSuperiors(employee);
-    
+
     const sameLevel: Employee[] = [];
     const levelBelow: Employee[] = [];
-    
+
     allEmployees.forEach(emp => {
       // Don't include self
       if (emp.id === employee.id) return;
-      
-      // Don't include already added successors (direct or additional)
-      const isDirectReport = directReports.some(dr => dr.id === emp.id);
-      const isAdditionalSuccessor = additionalSuccessorIds.includes(emp.id);
-      if (isDirectReport || isAdditionalSuccessor) return;
-      
+
+      // Don't include already listed successors
+      const isAlreadySuccessor = allSuccessors.some(s => s.id === emp.id);
+      if (isAlreadySuccessor) return;
+
       // Don't include superiors (level di atasnya)
       if (superiorIds.has(emp.id)) return;
-      
+
       // Same level: same manager as current employee
       if (emp.managerId === employee.managerId) {
         sameLevel.push(emp);
@@ -1043,12 +1053,12 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
         <div className="content-stretch flex flex-col gap-[6px] items-end relative shrink-0 w-full">
           {allSuccessors.length > 0 ? (
             <>
-              {/* Direct Reports */}
-              {directReports.map((successor, idx) => (
-                <SuccessorCard 
-                  key={successor.id} 
-                  successor={successor} 
-                  index={idx} 
+              {/* Primary Successors (CSV-based or direct reports fallback) */}
+              {primarySuccessors.map((successor, idx) => (
+                <SuccessorCard
+                  key={successor.id}
+                  successor={successor}
+                  index={idx}
                   onIDPDialogChange={onIDPDialogChange}
                   isAdditional={false}
                   heatmapConfig={heatmapConfig}
@@ -1057,12 +1067,12 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
                   onShowIDPProgress={onShowIDPProgress}
                 />
               ))}
-              {/* Additional Successors */}
+              {/* Manually Added Successors */}
               {additionalSuccessors.map((successor, idx) => (
-                <SuccessorCard 
-                  key={successor.id} 
-                  successor={successor} 
-                  index={directReports.length + idx} 
+                <SuccessorCard
+                  key={successor.id}
+                  successor={successor}
+                  index={primarySuccessors.length + idx}
                   onIDPDialogChange={onIDPDialogChange}
                   isAdditional={true}
                   onRemove={() => handleRemoveSuccessor(successor.id)}

@@ -1060,8 +1060,8 @@ export default function App() {
       {/* Employee Detail Panel */}
       <div data-no-drag>
         {(activeTab === 'need-successors' || activeTab === 'need-successors-copy') ? (
-          <SuccessionPanel 
-            employee={selectedEmployee} 
+          <SuccessionPanel
+            employee={selectedEmployee}
             onClose={() => setSelectedEmployee(null)}
             onCompare={handleCompareSuccessors}
             onIDPDialogChange={setIsIDPDialogOpen}
@@ -1070,6 +1070,7 @@ export default function App() {
             onNavigateToDetail={handleNavigateToDetail}
             onNavigateToIDP={handleNavigateToIDP}
             onShowIDPProgress={handleShowIDPProgress}
+            allEmployees={employees}
           />
         ) : (
           <EmployeeDetailPanel 

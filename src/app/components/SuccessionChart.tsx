@@ -40,16 +40,28 @@ export default function SuccessionChart({
   // Get manager (1 level up)
   const manager = allEmployees.find(emp => emp.id === employee.managerId);
 
-  // Get successors (direct reports + additional successors)
+  // Get successors — prefer CSV-based successorIds, fall back to direct reports
   // Use dataManager to get the latest additionalSuccessors data
   const currentEmployeeData = dataManager.getEmployees().find(e => e.id === employee.id);
   const additionalSuccessorIds = currentEmployeeData?.additionalSuccessors || [];
-  
+
   const directReports = allEmployees.filter(emp => emp.managerId === employee.id);
-  const additionalSuccessors = allEmployees.filter(emp => 
-    additionalSuccessorIds.includes(emp.id) && !directReports.find(dr => dr.id === emp.id)
+
+  // CSV-based planned successors (from "Successor For Employee ID" column)
+  const csvSuccessorIds = employee.successorIds || [];
+  const csvSuccessors = allEmployees.filter(emp => csvSuccessorIds.includes(emp.id));
+
+  // Manually added successors (de-duped against CSV successors)
+  const additionalSuccessors = allEmployees.filter(emp =>
+    additionalSuccessorIds.includes(emp.id) &&
+    !directReports.find(dr => dr.id === emp.id) &&
+    !csvSuccessorIds.includes(emp.id)
   );
-  const successors = [...directReports, ...additionalSuccessors];
+
+  // If CSV has successor data, use it; otherwise fall back to direct reports
+  const successors = csvSuccessorIds.length > 0
+    ? [...csvSuccessors, ...additionalSuccessors]
+    : [...directReports, ...additionalSuccessors];
 
   // Zoom functions
   const handleZoomIn = () => {

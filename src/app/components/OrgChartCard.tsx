@@ -295,11 +295,17 @@ export default function OrgChartCard({ name, position, jobTitle, competencyScore
       return 0;
     }
     
-    // Get all successors (direct reports + additional successors)
+    // Get all successors — prefer CSV successorIds, fall back to direct reports
+    const csvSuccessorIds = currentEmployee.successorIds || [];
     const directReports = allEmployees.filter(emp => emp.managerId === employeeId);
     const additionalSuccessorIds = currentEmployee.additionalSuccessors || [];
-    const additionalSuccessors = allEmployees.filter(emp => additionalSuccessorIds.includes(emp.id));
-    const allSuccessors = [...directReports, ...additionalSuccessors];
+    const additionalSuccessors = allEmployees.filter(emp =>
+      additionalSuccessorIds.includes(emp.id) && !csvSuccessorIds.includes(emp.id)
+    );
+    const primarySuccessors = csvSuccessorIds.length > 0
+      ? allEmployees.filter(emp => csvSuccessorIds.includes(emp.id))
+      : directReports;
+    const allSuccessors = [...primarySuccessors, ...additionalSuccessors];
     
     // Get green/READY range (highest range = READY)
     const sortedRanges = [...readinessScoreRanges].sort((a, b) => a.min - b.min);
