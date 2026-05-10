@@ -1002,8 +1002,8 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
   };
 
   return (
-    <div 
-      className="fixed right-0 top-0 h-full w-[420px] bg-white shadow-[-4px_0px_30px_0px_rgba(0,0,0,0.1)] z-[100] animate-in slide-in-from-right duration-300"
+    <div
+      className="fixed right-0 top-0 h-full w-[420px] bg-white shadow-[-4px_0px_30px_0px_rgba(0,0,0,0.1)] z-[100] animate-in slide-in-from-right duration-300 overflow-y-auto"
       data-name="Succession"
     >
       {/* Header */}
@@ -1050,7 +1050,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
         </div>
 
         {/* Successors */}
-        <div className="content-stretch flex flex-col gap-[6px] items-end relative shrink-0 w-full">
+        <div className="flex flex-col gap-[6px] items-end relative w-full">
           {allSuccessors.length > 0 ? (
             <>
               {/* Primary Successors (CSV-based or direct reports fallback) */}

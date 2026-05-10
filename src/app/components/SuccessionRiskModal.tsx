@@ -73,9 +73,9 @@ export default function SuccessionRiskModal({ employees, heatmapConfig, onEmploy
         </button>
       </div>
 
-      {/* Expanded list */}
+      {/* Expanded list - fixed height, scrollable */}
       {isExpanded && (
-        <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full">
+        <div className="flex flex-col gap-[8px] items-start relative w-full max-h-[400px] overflow-y-auto">
           {riskPositions.length > 0 ? (
             riskPositions.map((emp) => (
               <div
