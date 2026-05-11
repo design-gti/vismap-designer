@@ -889,9 +889,8 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
   const allSuccessors = [...primarySuccessors, ...additionalSuccessors];
 
   const handleCompareClick = () => {
-    if (onCompare) {
-      onCompare(employee, allSuccessors);
-    }
+    // Navigate to parent window (break out of iframe)
+    window.top!.location.href = 'http://demox.kelola.app/tdp';
   };
   
   // Get eligible employees for adding as successors
