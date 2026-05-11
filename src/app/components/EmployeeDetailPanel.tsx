@@ -301,7 +301,7 @@ export default function EmployeeDetailPanel({ employee, onClose, onNavigateToDet
           >
             <div aria-hidden="true" className="absolute border border-[#016699] border-solid inset-0 pointer-events-none rounded-[28px]" />
             <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[8px] relative">
-              <p className="font-['Avenir',_sans-serif] font-black leading-[normal] not-italic relative shrink-0 text-[#016699] text-[14px] text-nowrap whitespace-pre">Quick IDP Recommendation</p>
+              <p className="font-['Avenir',_sans-serif] font-black leading-[normal] not-italic relative shrink-0 text-[#016699] text-[14px] text-nowrap whitespace-pre">Create IDP</p>
             </div>
           </button>
         )}
