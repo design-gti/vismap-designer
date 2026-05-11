@@ -1013,7 +1013,9 @@ export default function App() {
         {viewMode === 'chart' && activeTab === 'need-successors-copy' && showHeatmap && (
           <div
             data-no-drag
-            className="fixed top-20 right-4 z-50"
+            className={`fixed top-20 z-50 transition-all duration-300 ${
+              selectedEmployee ? 'right-[460px]' : 'right-4'
+            }`}
           >
             <SuccessionRiskModal
               employees={employees}
@@ -1025,15 +1027,22 @@ export default function App() {
                 }
               }}
               onZoomToEmployee={(employeeId) => {
+                console.log('onZoomToEmployee called with employeeId:', employeeId);
                 // Set zoom to 200%
                 setZoom(200);
 
-                // Find the employee card element
+                // Find the employee card element with increased timeout
                 setTimeout(() => {
                   const cardElement = document.querySelector(`[data-employee-id="${employeeId}"]`);
+                  console.log('Looking for card with data-employee-id:', employeeId);
+                  console.log('Card element found:', cardElement);
+
                   if (cardElement && containerRef.current) {
                     const cardRect = cardElement.getBoundingClientRect();
                     const containerRect = containerRef.current.getBoundingClientRect();
+
+                    console.log('Card rect:', cardRect);
+                    console.log('Container rect:', containerRect);
 
                     // Calculate the position to center the card
                     // Account for current zoom level
@@ -1047,9 +1056,12 @@ export default function App() {
                     const newX = position.x + (containerCenterX - cardCenterX) / zoomFactor;
                     const newY = position.y + (containerCenterY - cardCenterY) / zoomFactor;
 
+                    console.log('Calculating new position:', { newX, newY });
                     setPosition({ x: newX, y: newY });
+                  } else {
+                    console.warn('Could not find card element or container ref');
                   }
-                }, 100);
+                }, 300);
               }}
             />
           </div>
