@@ -1083,15 +1083,15 @@ export default function App() {
             onShowIDPProgress={handleShowIDPProgress}
             allEmployees={employees}
           />
-        ) : (
-          <EmployeeDetailPanel 
-            employee={selectedEmployee} 
+        ) : activeTab === 'need-develop' ? (
+          <EmployeeDetailPanel
+            employee={selectedEmployee}
             onClose={() => setSelectedEmployee(null)}
             onNavigateToDetail={handleNavigateToDetail}
             onNavigateToIDP={handleNavigateToIDP}
             onShowIDPProgress={handleShowIDPProgress}
           />
-        )}
+        ) : null}
       </div>
 
       {/* Combined Top Bar - Tab Filter + View Mode Toggle */}
