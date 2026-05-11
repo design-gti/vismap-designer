@@ -1027,39 +1027,38 @@ export default function App() {
                 }
               }}
               onZoomToEmployee={(employeeId) => {
-                console.log('onZoomToEmployee called with employeeId:', employeeId);
                 // Set zoom to 200%
                 setZoom(200);
 
-                // Find the employee card element with increased timeout
+                // Find the employee card element with increased timeout for zoom animation
                 setTimeout(() => {
                   const cardElement = document.querySelector(`[data-employee-id="${employeeId}"]`);
-                  console.log('Looking for card with data-employee-id:', employeeId);
-                  console.log('Card element found:', cardElement);
 
                   if (cardElement && containerRef.current) {
                     const cardRect = cardElement.getBoundingClientRect();
-                    const containerRect = containerRef.current.getBoundingClientRect();
+                    const zoomFactor = 200 / 100; // 2x zoom
 
-                    console.log('Card rect:', cardRect);
-                    console.log('Container rect:', containerRect);
+                    // Calculate card center in viewport coordinates
+                    const cardCenterViewportX = cardRect.left + cardRect.width / 2;
+                    const cardCenterViewportY = cardRect.top + cardRect.height / 2;
 
-                    // Calculate the position to center the card
-                    // Account for current zoom level
-                    const zoomFactor = 200 / 100;
-                    const cardCenterX = cardRect.left + cardRect.width / 2;
-                    const cardCenterY = cardRect.top + cardRect.height / 2;
-                    const containerCenterX = containerRect.width / 2;
-                    const containerCenterY = containerRect.height / 2 + 32; // Account for top bar
+                    // Calculate where card should be (center of screen)
+                    const viewportCenterX = window.innerWidth / 2;
+                    const viewportCenterY = window.innerHeight / 2;
 
-                    // Calculate new position
-                    const newX = position.x + (containerCenterX - cardCenterX) / zoomFactor;
-                    const newY = position.y + (containerCenterY - cardCenterY) / zoomFactor;
+                    // Calculate how much the card needs to move in viewport coordinates
+                    const deltaViewportX = viewportCenterX - cardCenterViewportX;
+                    const deltaViewportY = viewportCenterY - cardCenterViewportY;
 
-                    console.log('Calculating new position:', { newX, newY });
+                    // Convert viewport delta to SVG coordinates by dividing by zoom factor
+                    const deltaSVGX = deltaViewportX / zoomFactor;
+                    const deltaSVGY = deltaViewportY / zoomFactor;
+
+                    // Apply delta to current pan position
+                    const newX = position.x + deltaSVGX;
+                    const newY = position.y + deltaSVGY;
+
                     setPosition({ x: newX, y: newY });
-                  } else {
-                    console.warn('Could not find card element or container ref');
                   }
                 }, 300);
               }}
