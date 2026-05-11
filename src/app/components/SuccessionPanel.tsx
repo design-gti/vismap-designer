@@ -895,11 +895,18 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
   };
 
   const handleNavigateToEmployeeProfile = (employeeId: string) => {
+    console.log('handleNavigateToEmployeeProfile called with employeeId:', employeeId);
     // Find employee by ID to get their reference ID
     const selectedEmployee = allEmployees.find(e => e.id === employeeId);
+    console.log('selectedEmployee:', selectedEmployee);
+    console.log('referenceId:', selectedEmployee?.referenceId);
     if (selectedEmployee && selectedEmployee.referenceId) {
       // Navigate to parent window with employee profile URL
-      window.top!.location.href = `https://demox.kelola.app/company/employee/profile/${selectedEmployee.referenceId}`;
+      const profileUrl = `https://demox.kelola.app/company/employee/profile/${selectedEmployee.referenceId}`;
+      console.log('Navigating to:', profileUrl);
+      window.top!.location.href = profileUrl;
+    } else {
+      console.warn('No referenceId found for employee', selectedEmployee);
     }
   };
   

@@ -97,6 +97,7 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
       successorIds: successorIds.length > 0 ? successorIds : undefined,
       managerId,
       imageUrl: row['Photo URL'] || undefined,
+      referenceId: row['Referance ID'] || undefined,
       performanceRating: 3,
       readinessScore: readiness,
       criticalPosition: row['Critical Position'] === 'Yes',
