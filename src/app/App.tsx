@@ -1227,15 +1227,20 @@ export default function App() {
                 {orgChart.map((root) => (
                   <OrgNode 
                     key={root.id}
-                    employee={root} 
-                    level={0} 
-                    showHeatmap={showHeatmap} 
-                    heatmapStyle={heatmapStyle} 
-                    heatmapMode={heatmapMode} 
-                    onEmployeeClick={setSelectedEmployee} 
-                    visibleColumns={visibleColumns} 
-                    heatmapRanges={getCurrentHeatmapRanges()} 
-                    heatmapConfig={heatmapConfig} 
+                    employee={root}
+                    level={0}
+                    showHeatmap={showHeatmap}
+                    heatmapStyle={heatmapStyle}
+                    heatmapMode={heatmapMode}
+                    onEmployeeClick={(emp) => {
+                      // Only allow card selection on tabs with panels
+                      if (activeTab !== 'all') {
+                        setSelectedEmployee(emp);
+                      }
+                    }}
+                    visibleColumns={visibleColumns}
+                    heatmapRanges={getCurrentHeatmapRanges()}
+                    heatmapConfig={heatmapConfig}
                     allEmployees={employees}
                     selectedCardInV2Mode={selectedCardInV2Mode}
                     onCardClickInV2Mode={(employeeId) => {
@@ -1253,10 +1258,15 @@ export default function App() {
           </div>
         ) : (
           <div className="size-full p-4">
-            <TableView 
+            <TableView
               employees={employees}
               activeTab={activeTab}
-              onEmployeeClick={setSelectedEmployee}
+              onEmployeeClick={(emp) => {
+                // Only allow card selection on tabs with panels
+                if (activeTab !== 'all') {
+                  setSelectedEmployee(emp);
+                }
+              }}
               visibleColumns={visibleColumns}
               setVisibleColumns={setVisibleColumns}
               showHeatmap={showHeatmap}
