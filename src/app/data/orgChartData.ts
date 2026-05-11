@@ -48,6 +48,7 @@ export interface Employee {
   successors: number;
   managerId?: string;
   imageUrl?: string;
+  referenceId?: string; // Reference ID from CSV for employee profile link
   performanceRating?: number; // 1-5 scale for heatmap
   readinessScore?: number; // 0-100 percentage - readiness for next level position
   competencyDetails?: CompetencyDetail[];

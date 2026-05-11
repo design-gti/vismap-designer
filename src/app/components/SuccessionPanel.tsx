@@ -215,9 +215,10 @@ interface SuccessorCardProps {
   onNavigateToDetail?: (employeeId: string) => void;
   onNavigateToIDP?: (employeeId: string) => void;
   onShowIDPProgress?: (employeeId: string) => void;
+  onNavigateToProfile?: (employeeId: string) => void; // New handler for employee profile navigation
 }
 
-function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRemove, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress }: SuccessorCardProps) {
+function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRemove, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress, onNavigateToProfile }: SuccessorCardProps) {
   const [isExpanded, setIsExpanded] = useState(false); // All successors collapsed by default
   const [isIDPDialogOpen, setIsIDPDialogOpen] = useState(false);
   const [isIDPProgressDialogOpen, setIsIDPProgressDialogOpen] = useState(false);
@@ -340,11 +341,11 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
                     <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" />
                   )}
                 </div>
-                <div 
-                  className={`basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 ${onNavigateToDetail ? 'cursor-pointer' : ''}`}
-                  onClick={() => onNavigateToDetail?.(successor.id)}
+                <div
+                  className="basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 cursor-pointer"
+                  onClick={() => onNavigateToProfile?.(successor.id)}
                 >
-                  <div className={`flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full ${onNavigateToDetail ? 'hover:opacity-70 transition-opacity' : ''}`}>
+                  <div className="flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full hover:opacity-70 transition-opacity">
                     <p className="leading-[normal]">{successor.name}</p>
                   </div>
                   <div className="flex flex-col font-['Open_Sans',_sans-serif] font-normal justify-center relative shrink-0 text-[#495057] text-[10px] w-full" style={{ fontVariationSettings: "'wdth' 100" }}>
@@ -435,11 +436,11 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
                   <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" />
                 )}
               </div>
-              <div 
-                className={`basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 ${onNavigateToDetail ? 'cursor-pointer' : ''}`}
-                onClick={() => onNavigateToDetail?.(successor.id)}
+              <div
+                className="basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 cursor-pointer"
+                onClick={() => onNavigateToProfile?.(successor.id)}
               >
-                <div className={`flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full ${onNavigateToDetail ? 'hover:opacity-70 transition-opacity' : ''}`}>
+                <div className="flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full hover:opacity-70 transition-opacity">
                   <p className="leading-[normal]">{successor.name}</p>
                 </div>
                 <div className="flex flex-col font-['Open_Sans',_sans-serif] font-normal justify-center relative shrink-0 text-[#495057] text-[10px] w-full" style={{ fontVariationSettings: "'wdth' 100" }}>
@@ -892,6 +893,15 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
     // Navigate to parent window (break out of iframe)
     window.top!.location.href = 'http://demox.kelola.app/tdp';
   };
+
+  const handleNavigateToEmployeeProfile = (employeeId: string) => {
+    // Find employee by ID to get their reference ID
+    const selectedEmployee = allEmployees.find(e => e.id === employeeId);
+    if (selectedEmployee && selectedEmployee.referenceId) {
+      // Navigate to parent window with employee profile URL
+      window.top!.location.href = `https://demox.kelola.app/company/employee/profile/${selectedEmployee.referenceId}`;
+    }
+  };
   
   // Get eligible employees for adding as successors
   // Same level (same manager) OR level below (anyone with managerId set)
@@ -1007,9 +1017,9 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
     >
       {/* Header */}
       <div className="absolute content-stretch flex items-center justify-between left-[17px] top-[20px] w-[384px]">
-        <div 
-          className={`flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#495057] text-[12px] text-nowrap text-right ${onNavigateToDetail ? 'cursor-pointer hover:opacity-70 transition-opacity' : ''}`}
-          onClick={() => onNavigateToDetail?.(employee.id)}
+        <div
+          className={`flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#495057] text-[12px] text-nowrap text-right cursor-pointer hover:opacity-70 transition-opacity`}
+          onClick={() => handleNavigateToEmployeeProfile(employee.id)}
         >
           <p className="leading-[normal] whitespace-pre font-bold">{employee.name}</p>
         </div>
@@ -1033,11 +1043,11 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
                   <img src={employee.imageUrl} alt={employee.name} className="absolute inset-0 object-cover size-full" />
                 )}
               </div>
-              <div 
-                className={`basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 ${onNavigateToDetail ? 'cursor-pointer' : ''}`}
-                onClick={() => onNavigateToDetail?.(employee.id)}
+              <div
+                className="basis-0 content-stretch flex flex-col grow items-start justify-center leading-[0] min-h-px min-w-px relative shrink-0 cursor-pointer"
+                onClick={() => handleNavigateToEmployeeProfile(employee.id)}
               >
-                <div className={`flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full ${onNavigateToDetail ? 'hover:opacity-70 transition-opacity' : ''}`}>
+                <div className="flex flex-col font-['Avenir:Heavy',_sans-serif] justify-center not-italic relative shrink-0 text-[#016699] text-[12px] w-full hover:opacity-70 transition-opacity">
                   <p className="leading-[normal]">{employee.name}</p>
                 </div>
                 <div className="flex flex-col font-['Open_Sans',_sans-serif] font-normal justify-center relative shrink-0 text-[#495057] text-[10px] w-full" style={{ fontVariationSettings: "'wdth' 100" }}>
@@ -1064,6 +1074,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
                   onNavigateToDetail={onNavigateToDetail}
                   onNavigateToIDP={onNavigateToIDP}
                   onShowIDPProgress={onShowIDPProgress}
+                  onNavigateToProfile={handleNavigateToEmployeeProfile}
                 />
               ))}
               {/* Manually Added Successors */}
