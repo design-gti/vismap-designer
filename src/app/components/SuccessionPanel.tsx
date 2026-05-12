@@ -373,20 +373,6 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
                     )}
                   </div>
                 </div>
-                <div className="content-stretch flex items-center relative shrink-0 w-[68px]">
-                  <div 
-                    className="box-border content-stretch flex gap-[4px] items-center justify-center px-[8px] py-[2px] relative rounded-[800px] shrink-0" 
-                    data-name="Chip"
-                    style={{ backgroundColor: badge.bg, border: `1px solid ${badge.border}` }}
-                  >
-                    <p 
-                      className="font-['Open_Sans',_sans-serif] font-bold leading-[normal] relative shrink-0 text-[10px] text-nowrap uppercase whitespace-pre" 
-                      style={{ fontVariationSettings: "'wdth' 100", color: badge.text }}
-                    >
-                      {badge.label}
-                    </p>
-                  </div>
-                </div>
                 {isAdditional && onRemove && (
                   <button 
                     onClick={onRemove}
@@ -458,20 +444,6 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
                     strokeWidth={2.5}
                   />
                 )}
-              </div>
-              <div className="content-stretch flex items-center relative shrink-0 w-[68px]">
-                <div 
-                  className="box-border content-stretch flex gap-[4px] items-center justify-center px-[8px] py-[2px] relative rounded-[800px] shrink-0" 
-                  data-name="Chip"
-                  style={{ backgroundColor: badge.bg, border: `1px solid ${badge.border}` }}
-                >
-                  <p 
-                    className="font-['Open_Sans',_sans-serif] font-bold leading-[normal] relative shrink-0 text-[10px] text-nowrap uppercase whitespace-pre" 
-                    style={{ fontVariationSettings: "'wdth' 100", color: badge.text }}
-                  >
-                    {badge.label}
-                  </p>
-                </div>
               </div>
               {isAdditional && onRemove && (
                 <button 
