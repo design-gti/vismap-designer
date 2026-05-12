@@ -220,7 +220,6 @@ interface SuccessorCardProps {
 
 function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRemove, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress, onNavigateToProfile }: SuccessorCardProps) {
   const [isExpanded, setIsExpanded] = useState(false); // All successors collapsed by default
-  const [isIDPDialogOpen, setIsIDPDialogOpen] = useState(false);
   const [isIDPProgressDialogOpen, setIsIDPProgressDialogOpen] = useState(false);
   const [aiRecommendations, setAiRecommendations] = useState<AIGeneratedRecommendation[]>([]);
   const [showAIDialog, setShowAIDialog] = useState(false);
@@ -410,19 +409,6 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
               <ClusterScoreCard label="Capability" score={clusterScores.capability} />
               <ClusterScoreCard label="Commitment" score={clusterScores.commitment} />
               <ClusterScoreCard label="Contribution" score={clusterScores.contribution} />
-
-              {/* IDP Recommendation Button */}
-              <button
-                onClick={() => setIsIDPDialogOpen(true)}
-                className="relative rounded-[28px] shrink-0 w-full cursor-pointer hover:opacity-80 transition-opacity"
-                data-name="button"
-              >
-                <div className="flex flex-row items-center justify-center size-full">
-                  <div className="content-stretch flex gap-[8px] items-center justify-center px-[8px] relative size-full">
-                    <p className="font-['Avenir:Heavy',_sans-serif] leading-[normal] not-italic relative shrink-0 text-[#016699] text-[14px] whitespace-nowrap">IDP Recommendation</p>
-                  </div>
-                </div>
-              </button>
             </div>
           </div>
         </div>
@@ -490,84 +476,6 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
         </div>
       )}
       </div>
-      
-      {/* IDP Recommendation Dialog */}
-      <Dialog open={isIDPDialogOpen} onOpenChange={(open) => {
-        setIsIDPDialogOpen(open);
-        onIDPDialogChange?.(open);
-      }}>
-        <DialogContent className="max-w-[500px] max-h-[80vh] overflow-y-auto font-['Open_Sans',_sans-serif]">
-          <DialogHeader>
-            <DialogTitle className="font-['Open_Sans',_sans-serif] font-bold text-[#495057]">
-              IDP Recommendation - {successor.name}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Individual Development Plan recommendations for {successor.name}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="flex flex-col gap-[16px] mt-4">
-            {aspectsNeedDevelop.length > 0 ? (
-              aspectsNeedDevelop.map((comp, idx) => {
-                // Find matching recommendation by name
-                let matchingRec = idpRecommendations.find(rec => 
-                  rec.competency.toLowerCase() === comp.name.toLowerCase()
-                );
-                
-                // If no match found, create a default recommendation with the EXACT aspect name
-                if (!matchingRec) {
-                  matchingRec = {
-                    competency: comp.name,
-                    successMeasures: ["Improve competency score to level 4 or above", "Complete relevant training and development programs"],
-                    programs: [
-                      { type: "Training", description: `Focused training program for ${comp.name} development` },
-                      { type: "Coaching", description: `One-on-one coaching sessions with subject matter expert` }
-                    ]
-                  };
-                } else {
-                  // Even if found, ensure the competency name matches exactly
-                  matchingRec = {
-                    ...matchingRec,
-                    competency: comp.name
-                  };
-                }
-                
-                return <IDPSection key={idx} recommendation={matchingRec} />;
-              })
-            ) : (
-              <div className="flex flex-col gap-[12px] items-center justify-center p-[24px]">
-                <p className="text-[#adb5bd] text-[14px] text-center">No aspects need development</p>
-                <p className="text-[#adb5bd] text-[12px] text-center">All competency scores meet or exceed the standard</p>
-              </div>
-            )}
-          </div>
-          
-          {/* Footer with button */}
-          <div className="flex justify-end mt-6 pt-4 border-t border-gray-200">
-            {hasActiveIDP ? (
-              <button 
-                onClick={() => {
-                  setIsIDPDialogOpen(false);
-                  onShowIDPProgress?.(successor.id);
-                }}
-                className="bg-[#016699] hover:bg-[#015580] text-white px-6 py-2 rounded-[28px] transition-colors font-['Open_Sans',_sans-serif] text-[14px] font-normal"
-              >
-                See IDP Progress
-              </button>
-            ) : (
-              <button 
-                onClick={() => {
-                  setIsIDPDialogOpen(false);
-                  onNavigateToIDP?.(successor.id);
-                }}
-                className="bg-[#016699] hover:bg-[#015580] text-white px-6 py-2 rounded-[28px] transition-colors font-['Open_Sans',_sans-serif] text-[14px] font-normal"
-              >
-                Continue
-              </button>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
       
       {/* IDP Progress Dialog */}
       <Dialog open={isIDPProgressDialogOpen} onOpenChange={(open) => {
@@ -993,12 +901,12 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
       }
       return emp;
     });
-    
+
     dataManager.saveEmployees(updatedEmployees);
     toast.success("Successor added successfully!");
     setRefreshKey(prev => prev + 1); // Force re-render
   };
-  
+
   const handleRemoveSuccessor = (successorId: string) => {
     const allEmployees = dataManager.getEmployees();
     const updatedEmployees = allEmployees.map(emp => {
@@ -1011,7 +919,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
       }
       return emp;
     });
-    
+
     dataManager.saveEmployees(updatedEmployees);
     toast.success("Successor removed successfully!");
     setRefreshKey(prev => prev + 1); // Force re-render
