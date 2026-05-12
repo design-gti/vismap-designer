@@ -1082,6 +1082,7 @@ export default function App() {
             onNavigateToIDP={handleNavigateToIDP}
             onShowIDPProgress={handleShowIDPProgress}
             allEmployees={employees}
+            onEmployeesChange={setEmployees}
           />
         ) : activeTab === 'need-develop' ? (
           <EmployeeDetailPanel

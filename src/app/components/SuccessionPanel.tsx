@@ -29,6 +29,7 @@ interface SuccessionPanelProps {
   onNavigateToIDP?: (employeeId: string) => void;
   onShowIDPProgress?: (employeeId: string) => void;
   allEmployees?: Employee[]; // CSV-loaded employees passed from parent
+  onEmployeesChange?: (employees: Employee[]) => void; // Propagates successor mutations back to App state
 }
 
 function ChevronsRight() {
@@ -756,10 +757,9 @@ function getSuccessors(employee: Employee): Employee[] {
   return directReports;
 }
 
-export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDialogChange, onAddSuccessorDialogChange, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress, allEmployees: propEmployees }: SuccessionPanelProps) {
+export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDialogChange, onAddSuccessorDialogChange, heatmapConfig, onNavigateToDetail, onNavigateToIDP, onShowIDPProgress, allEmployees: propEmployees, onEmployeesChange }: SuccessionPanelProps) {
   const [isAddSuccessorDialogOpen, setIsAddSuccessorDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0); // Force re-render when data changes
 
   // Helper to update dialog state and notify parent
   const setAddSuccessorDialogOpen = (isOpen: boolean) => {
@@ -890,7 +890,6 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
   const hasFilteredResults = filteredSameLevel.length > 0 || filteredLevelBelow.length > 0;
   
   const handleAddSuccessor = (successorId: string) => {
-    const allEmployees = dataManager.getEmployees();
     const updatedEmployees = allEmployees.map(emp => {
       if (emp.id === employee.id) {
         const currentAdditional = emp.additionalSuccessors || [];
@@ -903,12 +902,11 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
     });
 
     dataManager.saveEmployees(updatedEmployees);
+    onEmployeesChange?.(updatedEmployees);
     toast.success("Successor added successfully!");
-    setRefreshKey(prev => prev + 1); // Force re-render
   };
 
   const handleRemoveSuccessor = (successorId: string) => {
-    const allEmployees = dataManager.getEmployees();
     const updatedEmployees = allEmployees.map(emp => {
       if (emp.id === employee.id) {
         const currentAdditional = emp.additionalSuccessors || [];
@@ -921,8 +919,8 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
     });
 
     dataManager.saveEmployees(updatedEmployees);
+    onEmployeesChange?.(updatedEmployees);
     toast.success("Successor removed successfully!");
-    setRefreshKey(prev => prev + 1); // Force re-render
   };
 
   return (
