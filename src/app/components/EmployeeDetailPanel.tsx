@@ -294,10 +294,17 @@ export default function EmployeeDetailPanel({ employee, onClose, onNavigateToDet
             </div>
           </button>
         ) : (
-          <button 
-            className="relative rounded-[28px] w-full hover:bg-gray-50 transition-colors" 
+          <button
+            className="relative rounded-[28px] w-full hover:bg-gray-50 transition-colors"
             data-name="button"
-            onClick={() => setIsIDPDialogOpen(true)}
+            onClick={() => {
+              const url = "https://demox.kelola.app/development/monitoring?view=create-idp";
+              try {
+                (window.top ?? window).location.href = url;
+              } catch {
+                window.location.href = url;
+              }
+            }}
           >
             <div aria-hidden="true" className="absolute border border-[#016699] border-solid inset-0 pointer-events-none rounded-[28px]" />
             <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[12px] py-[8px] relative">
