@@ -771,7 +771,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
 
   const handleCompareClick = () => {
     // Navigate to parent window (break out of iframe)
-    window.top!.location.href = 'http://demox.kelola.app/tdp';
+    window.top!.location.href = 'http://dsn.kelola.app/tdp';
   };
 
   const handleNavigateToEmployeeProfile = (employeeId: string) => {
@@ -782,7 +782,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
     console.log('referenceId:', selectedEmployee?.referenceId);
     if (selectedEmployee && selectedEmployee.referenceId) {
       // Navigate to parent window with employee profile URL
-      const profileUrl = `https://demox.kelola.app/company/employee/profile/${selectedEmployee.referenceId}`;
+      const profileUrl = `https://dsn.kelola.app/company/employee/profile/${selectedEmployee.referenceId}`;
       console.log('Navigating to:', profileUrl);
       window.top!.location.href = profileUrl;
     } else {

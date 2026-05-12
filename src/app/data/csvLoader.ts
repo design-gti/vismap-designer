@@ -1,25 +1,65 @@
 import { Employee } from './orgChartData';
 import { generateDevelopmentData } from './developmentData';
 
+function parseCSVLine(line: string): string[] {
+  const values: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  let i = 0;
+  while (i < line.length) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') {
+          current += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = false;
+        i++;
+        continue;
+      }
+      current += ch;
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      inQuotes = true;
+      i++;
+      continue;
+    }
+    if (ch === ',') {
+      values.push(current);
+      current = '';
+      i++;
+      continue;
+    }
+    current += ch;
+    i++;
+  }
+  values.push(current);
+  return values;
+}
+
 function parseCSV(text: string): Record<string, string>[] {
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(',').map(h => h.trim());
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+  const expectedCols = headers.length;
 
   return lines.slice(1).map(line => {
-    const values: string[] = [];
-    let current = '';
-    let inQuotes = false;
-    for (const ch of line) {
-      if (ch === '"') inQuotes = !inQuotes;
-      else if (ch === ',' && !inQuotes) { values.push(current.trim()); current = ''; }
-      else current += ch;
+    let values = parseCSVLine(line);
+    // Handle doubly-escaped rows: some rows in the source CSV are wrapped
+    // in outer quotes with all internal quotes escaped (e.g.
+    // `"68,46,TRUE,Umi,""CSR Area, Kaltara"",..."`), which a strict CSV
+    // parser collapses into a single field. Detect and unwrap.
+    if (values.length < expectedCols / 2 && values.length >= 1) {
+      values = parseCSVLine(values[0]);
     }
-    values.push(current.trim());
 
     return headers.reduce((obj, header, i) => {
-      obj[header] = values[i] ?? '';
+      obj[header] = (values[i] ?? '').trim();
       return obj;
     }, {} as Record<string, string>);
   });
@@ -49,6 +89,16 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
 
   const rows = parseCSV(await response.text());
 
+  // Assign synthetic IDs to rows missing an Employee ID so each renders as a
+  // distinct card (otherwise they collide in the lookup Map below).
+  let placeholderCounter = 0;
+  rows.forEach(row => {
+    if (!row['Employee ID']?.trim()) {
+      placeholderCounter += 1;
+      row['Employee ID'] = `__placeholder_${placeholderCounter}`;
+    }
+  });
+
   // Rank employees by Score descending (rank 1 = highest score)
   const sortedByScore = [...rows].sort(
     (a, b) => (parseFloat(b['Score']) || 0) - (parseFloat(a['Score']) || 0)
@@ -70,7 +120,8 @@ export async function loadEmployeesFromCSV(path = '/data/TDP-Vismap-112-Merged.c
 
   return rows.map(row => {
     const id = row['Employee ID'];
-    const numId = parseInt(id);
+    const isPlaceholder = id.startsWith('__placeholder_');
+    const numId = isPlaceholder ? 0 : parseInt(id);
     const score = parseFloat(row['Score']) || 0;
     const readiness = row['Readiness'] ? parseFloat(row['Readiness']) : undefined;
 
