@@ -298,7 +298,11 @@ export default function EmployeeDetailPanel({ employee, onClose, onNavigateToDet
             className="relative rounded-[28px] w-full hover:bg-gray-50 transition-colors"
             data-name="button"
             onClick={() => {
-              const url = "https://demox.kelola.app/development/monitoring?view=create-idp";
+              if (!employee.referenceId) {
+                console.warn('Create IDP: no referenceId for employee', employee.id);
+                return;
+              }
+              const url = `https://demox.kelola.app/company/employee/profile/${employee.referenceId}?openIdp=1`;
               try {
                 (window.top ?? window).location.href = url;
               } catch {
