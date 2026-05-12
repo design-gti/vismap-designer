@@ -302,7 +302,7 @@ export default function EmployeeDetailPanel({ employee, onClose, onNavigateToDet
                 console.warn('Create IDP: no referenceId for employee', employee.id);
                 return;
               }
-              const url = `https://demox.kelola.app/company/employee/profile/${employee.referenceId}?openIdp=1`;
+              const url = `https://dsn.kelola.app/company/employee/profile/${employee.referenceId}?openIdp=1`;
               try {
                 (window.top ?? window).location.href = url;
               } catch {

@@ -237,12 +237,17 @@ function VariableScore({ position, jobTitle, competencyScore, successors, visibl
 
 function EmployeFoto({ name, imageUrl, showChairIcon, position, showSwapped, jobTitle }: { name: string; imageUrl?: string; showChairIcon?: boolean; position?: string; showSwapped?: boolean; jobTitle?: string }) {
   const displayText = showSwapped ? (position || name) : name;
-  const isVacant = name === '(Vacant)';
-  
+  const isEmptyName = !name?.trim();
+  const isVacantMarker = name === '(Vacant)';
+  const isVacant = isVacantMarker || isEmptyName;
+
   return (
     <div className={`absolute left-1/2 overflow-clip w-full h-[109px] top-[-0.28px] translate-x-[-50%]`} style={{ backgroundColor: isVacant ? '#9e9e9e' : '#d6e6ff' }} data-name="Employe Foto">
-      {isVacant ? (
-        // Vacant position: show UserX icon
+      {isEmptyName ? (
+        // Empty name: gray background only, no icon
+        null
+      ) : isVacantMarker ? (
+        // Vacant position marker: show UserX icon
         <div className="absolute inset-0 flex items-center justify-center -translate-y-3">
           <UserX className="w-[60px] h-[60px] text-[#ffffff]" strokeWidth={1.5} />
         </div>
@@ -253,10 +258,10 @@ function EmployeFoto({ name, imageUrl, showChairIcon, position, showSwapped, job
         </div>
       ) : imageUrl ? (
         <div className="absolute inset-0 overflow-hidden">
-          <ImageLoader 
-            imageUrl={imageUrl} 
-            alt={name} 
-            className="absolute size-full object-cover" 
+          <ImageLoader
+            imageUrl={imageUrl}
+            alt={name}
+            className="absolute size-full object-cover"
           />
         </div>
       ) : (
@@ -366,7 +371,7 @@ export default function OrgChartCard({ name, position, jobTitle, competencyScore
   }
   
   // Check if this is a vacant position
-  const isVacant = name === '(Vacant)';
+  const isVacant = name === '(Vacant)' || !name?.trim();
   
   // For successor-risk mode: Only show heatmap for employees with readiness score
   // For performance mode: Show heatmap for all employees
