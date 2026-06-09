@@ -184,19 +184,20 @@ function OrgNode({ employee, level, showHeatmap, heatmapStyle, heatmapMode, onEm
   };
   
   const promotionReadinessPercentage = getPromotionReadinessPercentage();
-  
+
   // Check if this is a vacant position
   const isVacant = employee.name === '(Vacant)';
-  
-  // Show promotion tag for:
-  // - All employees except CEO (level > 0)
-  // - Vacant positions always show tag
-  const showPromotionTag = level > 0 && (promotionReadinessPercentage > 0 || isVacant);
-  
+
+  // Check if employee has actual readiness data from CSV (not calculated fallback)
+  const hasReadinessData = employee.readinessScore !== undefined && employee.readinessScore !== null;
+
+  // Show promotion tag on ALL cards in all tabs
+  const showPromotionTag = true;
+
   // Get color based on percentage range using readiness score heatmap config
   const getTagColor = (percentage: number): string => {
-    // For vacant positions, always return red
-    if (isVacant) {
+    // For vacant positions or no data, always return red
+    if (isVacant || !hasReadinessData) {
       return '#FF0004'; // Red for vacant
     }
     
@@ -300,11 +301,11 @@ function OrgNode({ employee, level, showHeatmap, heatmapStyle, heatmapMode, onEm
                     strokeWidth={2.5}
                   />
                 )}
-                <span 
+                <span
                   className="font-['Open_Sans',_sans-serif] text-[8px] font-bold font-normal"
                   style={{ color: tagColor }}
                 >
-                  {isVacant ? '-' : `${promotionReadinessPercentage}`}%
+                  {(isVacant || !hasReadinessData) ? '-' : `${promotionReadinessPercentage}%`}
                 </span>
               </div>
             </TooltipTrigger>
@@ -312,6 +313,8 @@ function OrgNode({ employee, level, showHeatmap, heatmapStyle, heatmapMode, onEm
               <p className="font-['Open_Sans',_sans-serif]">
                 {isVacant ? (
                   <>Posisi <strong>kosong</strong> (belum ada yang mengisi)</>
+                ) : !hasReadinessData ? (
+                  <>Data kesiapan <strong>{firstName}</strong> belum tersedia</>
                 ) : (
                   <>
                     Kesiapan <strong>{firstName}</strong> terhadap posisi <strong>{managerPosition || employee.position}</strong> sebesar <strong>{promotionReadinessPercentage}%</strong>

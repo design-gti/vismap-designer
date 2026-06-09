@@ -571,9 +571,9 @@ export default function OrgChartCard({ name, position, jobTitle, competencyScore
   const v2Tooltip = getV2ModeTooltip();
 
   return (
-    <div 
-      className="relative w-[135px] cursor-pointer group" 
-      style={{ minHeight: `${cardHeight}px`, maxHeight: maxCardHeight ? `${maxCardHeight}px` : 'none' }}
+    <div
+      className="relative w-[135px] cursor-pointer group"
+      style={{ height: maxCardHeight ? `${maxCardHeight}px` : `${cardHeight}px` }}
       data-name="Employee Card Wrapper"
       data-employee-id={employeeId}
       onClick={onClick}
