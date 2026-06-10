@@ -73,6 +73,8 @@ export function ImageLoader({ imageUrl, alt, className, onError }: ImageLoaderPr
       src={resolvedUrl}
       alt={alt}
       className={className}
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
       onError={() => {
         setHasError(true);
         if (onError) onError();

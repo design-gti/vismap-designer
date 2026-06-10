@@ -338,7 +338,7 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
               <div className="box-border content-stretch flex gap-[8px] h-[38px] items-center pb-[8px] pt-0 px-0 relative rounded-[8px] shrink-0 w-full">
                 <div className="bg-white overflow-clip relative rounded-[15px] shadow-[1px_1px_8px_0px_rgba(0,0,0,0.2)] shrink-0 size-[30px]">
                   {successor.imageUrl && (
-                    <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" />
+                    <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" referrerPolicy="no-referrer" crossOrigin="anonymous" />
                   )}
                 </div>
                 <div
@@ -406,7 +406,7 @@ function SuccessorCard({ successor, index, onIDPDialogChange, isAdditional, onRe
             <div className="box-border content-stretch flex gap-[8px] items-center p-[8px] relative w-full">
               <div className="bg-white overflow-clip relative rounded-[15px] shadow-[1px_1px_8px_0px_rgba(0,0,0,0.2)] shrink-0 size-[30px]">
                 {successor.imageUrl && (
-                  <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" />
+                  <img src={successor.imageUrl} alt={successor.name} className="absolute inset-0 object-cover size-full" referrerPolicy="no-referrer" crossOrigin="anonymous" />
                 )}
               </div>
               <div
@@ -925,7 +925,7 @@ export default function SuccessionPanel({ employee, onClose, onCompare, onIDPDia
             <div className="box-border content-stretch flex gap-[8px] h-[46px] items-center p-[8px] relative w-full">
               <div className="bg-white overflow-clip relative rounded-[15px] shadow-[1px_1px_8px_0px_rgba(0,0,0,0.2)] shrink-0 size-[30px]">
                 {employee.imageUrl && (
-                  <img src={employee.imageUrl} alt={employee.name} className="absolute inset-0 object-cover size-full" />
+                  <img src={employee.imageUrl} alt={employee.name} className="absolute inset-0 object-cover size-full" referrerPolicy="no-referrer" crossOrigin="anonymous" />
                 )}
               </div>
               <div
