@@ -391,31 +391,34 @@ function OrgNode({ employee, level, showHeatmap, heatmapStyle, heatmapMode, onEm
 
       {/* Direct Reports */}
       {hasReports && isExpanded && (
-        <div className="relative">
-          {/* Container for all reports */}
-          <div className="flex gap-8 justify-center">
-            {employee.reports.map((report, index) => (
-              <div key={report.id} className="flex flex-col items-center">
-                {/* Vertical line down to child */}
+        <div className="flex justify-center">
+          {employee.reports.map((report, index) => {
+            const isOnly = employee.reports.length === 1;
+            const isFirst = index === 0;
+            const isLast = index === employee.reports.length - 1;
+            return (
+              <div key={report.id} className="relative flex flex-col items-center px-4">
+                {/* Horizontal connector segments drawn from card center outward to siblings.
+                    Each column draws its own half-segment, so the line always aligns
+                    with the actual card centers regardless of column width. */}
+                {!isOnly && (
+                  <>
+                    {/* Left half-segment: connects to the sibling on the left */}
+                    {!isFirst && (
+                      <div className="absolute h-px bg-[#016699]" style={{ top: 0, left: 0, right: '50%' }} />
+                    )}
+                    {/* Right half-segment: connects to the sibling on the right */}
+                    {!isLast && (
+                      <div className="absolute h-px bg-[#016699]" style={{ top: 0, left: '50%', right: 0 }} />
+                    )}
+                  </>
+                )}
+                {/* Vertical stalk from horizontal connector down to child card */}
                 <div className="w-px bg-[#016699] h-6" />
-                
                 <OrgNode employee={report} level={level + 1} showHeatmap={showHeatmap} heatmapStyle={heatmapStyle} heatmapMode={heatmapMode} onEmployeeClick={onEmployeeClick} managerPosition={employee.position} visibleColumns={visibleColumns} heatmapRanges={heatmapRanges} heatmapConfig={heatmapConfig} allEmployees={allEmployees} selectedCardInV2Mode={selectedCardInV2Mode} onCardClickInV2Mode={onCardClickInV2Mode} highlightedEmployeeId={highlightedEmployeeId} />
               </div>
-            ))}
-          </div>
-          
-          {/* Horizontal line connecting all children - only if multiple reports */}
-          {employee.reports.length > 1 && (
-            <div 
-              className="absolute h-px bg-[#016699]"
-              style={{
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: `calc(100% - ${100 / employee.reports.length}%)`
-              }}
-            />
-          )}
+            );
+          })}
         </div>
       )}
     </div>
