@@ -590,7 +590,7 @@ export default function OrgChartCard({ name, position, jobTitle, competencyScore
         </div>
       )}
       
-      <div className="bg-white overflow-clip relative rounded-[5px] w-full min-h-full flex flex-col shadow-lg z-10 transition-all duration-300 hover:scale-105">
+      <div className="bg-white overflow-clip relative rounded-[8px] w-full min-h-full flex flex-col z-10 transition-all duration-300 hover:scale-105" style={{ boxShadow: 'var(--shadow-card)' }}>
         <div className="relative w-full h-[109px] shrink-0">
           <EmployeFoto name={name} imageUrl={effectiveImageUrl} showChairIcon={showSwapped} position={position} showSwapped={showSwapped} jobTitle={jobTitle} />
         </div>
